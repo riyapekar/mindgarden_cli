@@ -62,6 +62,7 @@ mindgarden/
 │   └── gui.py               # Optional GUI module
 ├── README.md
 └── requirements.txt
+```
 
 📬 Contributing
 I welcome contributions!
