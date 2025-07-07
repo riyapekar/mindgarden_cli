@@ -9,12 +9,21 @@ from rich.prompt import Prompt
 from rich.table import Table
 from flask import Flask, render_template, request, redirect
 from model.mood import MOODS
+# --- New imports for AI analysis ---
+from dotenv import load_dotenv
+import google.generativeai as genai
 
 # --- Setup ---
 console = Console()
 DATA_DIR = os.path.expanduser("~/.mindgarden")
 KEY_FILE = os.path.join(DATA_DIR, "key.key")
 DATA_FILE = os.path.join(DATA_DIR, "journal.json")
+
+# --- Load .env and Google AI key ---
+load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
 
 # --- Utilities ---
 def ensure_data_dir():
@@ -54,6 +63,36 @@ def load_entries():
 def save_entries(entries):
     with open(DATA_FILE, 'w') as f:
         json.dump(entries, f, indent=2)
+
+# --- AI Analysis Function ---
+def analyze_entries(entries, key):
+    # Decrypt and concatenate all user reflections, moods, and gratitude
+    texts = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        try:
+            mood = decrypt(entry["mood"], key)
+            gratitude = decrypt(entry["gratitude"], key)
+            reflection = decrypt(entry["reflection"], key)
+            texts.append(f"Mood: {mood}\nGratitude: {gratitude}\nReflection: {reflection}")
+        except Exception:
+            continue
+    if not texts:
+        return "No valid entries to analyze."
+    prompt = (
+        "You are a helpful, positive psychologist AI. "
+        "Given the following journal entries, analyze the user's tendencies and provide a 4-sentence summary of their patterns and how they can improve their life. "
+        "Be gentle, supportive, and actionable.\n\n"
+        + "\n---\n".join(texts)
+    )
+    try:
+        # Use Gemini 2.5 Flash model explicitly
+        model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
+        response = model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        return f"AI analysis failed: {e}"
 
 # --- CLI Features ---
 def breathing_timer():
@@ -118,13 +157,20 @@ def view_entries():
         )
     console.print(table)
 
+def analyze_journal_cli():
+    key = load_key()
+    entries = load_entries()
+    console.print("\n[bold blue]Analyzing your journal entries with Google AI...[/bold blue]")
+    analysis = analyze_entries(entries, key)
+    console.print(f"\n[green]AI Analysis:[/green] {analysis}\n")
+
 # --- CLI Main ---
 def cli_main():
     ensure_data_dir()
     console.print("\n:herb: [bold green]Welcome to MindGarden[/bold green]")
     while True:
-        console.print("\n[1] New Entry\n[2] View Entries\n[3] Breathing Exercise\n[4] Exit")
-        choice = Prompt.ask("Choose an option", choices=["1", "2", "3", "4"])
+        console.print("\n[1] New Entry\n[2] View Entries\n[3] Breathing Exercise\n[4] Analyze My Journal\n[5] Exit")
+        choice = Prompt.ask("Choose an option", choices=["1", "2", "3", "4", "5"])
         if choice == "1":
             new_entry()
         elif choice == "2":
@@ -132,6 +178,8 @@ def cli_main():
         elif choice == "3":
             breathing_timer()
         elif choice == "4":
+            analyze_journal_cli()
+        elif choice == "5":
             console.print(":sunny: Goodbye! Keep growing.\n")
             break
 
@@ -143,15 +191,15 @@ def index():
     key = load_key()
     entries = load_entries()
     decrypted = [
-        # Only process entries that are dictionaries to avoid AttributeError
         {
-            "date": (datetime.datetime.fromisoformat(entry["timestamp"]).strftime("%Y-%m-%d %H:%M") if entry.get("timestamp") else entry.get("date", "")),
+            "date": entry.get("date", ""),
             "mood": decrypt(entry["mood"], key),
             "gratitude": decrypt(entry["gratitude"], key),
             "reflection": decrypt(entry["reflection"], key)
         } for entry in reversed(entries) if isinstance(entry, dict)
     ]
-    return render_template("index.html", entries=decrypted)
+    analysis = analyze_entries(entries, key)
+    return render_template("index.html", entries=decrypted, analysis=analysis)
 
 @app.route("/new", methods=["GET", "POST"])
 def new():
@@ -178,9 +226,25 @@ def new():
 def breathing_web():
     return render_template("breathing.html")
 
+@app.route("/analyze")
+def analyze_web():
+    key = load_key()
+    entries = load_entries()
+    decrypted = [
+        # Only process entries that are dictionaries to avoid AttributeError
+        {
+            "date": (datetime.datetime.fromisoformat(entry["timestamp"]).strftime("%Y-%m-%d %H:%M") if entry.get("timestamp") else entry.get("date", "")),
+            "mood": decrypt(entry["mood"], key),
+            "gratitude": decrypt(entry["gratitude"], key),
+            "reflection": decrypt(entry["reflection"], key)
+        } for entry in reversed(entries) if isinstance(entry, dict)
+    ]
+    analysis = analyze_entries(entries, key)
+    return render_template("index.html", entries=decrypted, analysis=analysis)
+
 # --- Entry Point ---
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "web":
-        app.run(debug=True)
+        app.run(debug=True, port=5001)
     else:
         cli_main()

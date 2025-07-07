@@ -14,6 +14,12 @@
   <a href="/breathing" style="margin-right:1rem; color:#4caf50; text-decoration:underline;">🧘 Breathing Exercise</a>
   <a href="/new">+ New Entry</a>
 <br></br>
+  {% if analysis %}
+    <div style="background:#e0ffe0; border:1px solid #b2ffb2; padding:1em; margin-bottom:1em; border-radius:8px;">
+      <h3>AI Analysis of Your Journal</h3>
+      <p>{{ analysis }}</p>
+    </div>
+  {% endif %}
   {% for e in entries %}
     <div class="entry">
       <strong>{{ e.date }}</strong><br>
