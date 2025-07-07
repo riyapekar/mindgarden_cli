@@ -83,7 +83,7 @@ def analyze_entries(entries, key):
     prompt = (
         "You are a helpful, positive psychologist AI. "
         "Given the following journal entries, analyze the user's tendencies and provide a 4-sentence summary of their patterns and how they can improve their life. "
-        "Be gentle, supportive, and actionable.\n\n"
+        "Be gentle, supportive, and actionable. Don't be too generic. Try to impress user wih something unexpected and hidden patterns.\n\n"
         + "\n---\n".join(texts)
     )
     try:
