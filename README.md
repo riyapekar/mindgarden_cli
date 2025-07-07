@@ -2,7 +2,7 @@
 
 **MindGarden** is a calming, minimalist Python application designed to help users reflect, track emotions, and cultivate mental clarity through journaling and self-awareness.
 
-<img src="assets/mindgarden_logo.png" alt="MindGarden Logo" width="200"/>
+<img src="assets/logo.png" alt="MindGarden Logo" width="200"/>
 
 ---
 
