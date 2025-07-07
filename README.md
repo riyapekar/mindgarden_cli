@@ -2,6 +2,8 @@
 
 **MindGarden** is a calming, minimalist Python application designed to help users reflect, track emotions, and cultivate mental clarity through journaling and self-awareness.
 
+<img src="assets/mindgarden_logo.png" alt="MindGarden Logo" width="200"/>
+
 ---
 
 ## 🧠 Overview
@@ -64,22 +66,23 @@ mindgarden/
 └── requirements.txt
 ```
 
-📬 Contributing
+---
+## 📬 Contributing
 I welcome contributions!
 Fork the repository
 Create a new branch (git checkout -b feature/my-feature)
 Commit your changes (git commit -m 'Add new feature')
 Push and open a PR
 
-📜 License
-GNU License — see [LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html) file.
+## 📜 License
+GNU — see [LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html) file.
 
-🌼 Philosophy
+## 🌼 Philosophy
 “Your mind is a garden. Your thoughts are the seeds. You can grow flowers or you can grow weeds.”
 — Anonymous
 MindGarden is built to help you grow peace, presence, and purpose.
 
-🔗 Contact
+## 🔗 Contact
 Created with ❤️ by @valpekar
 
 Have ideas or feedback? Open an issue or discussion!
