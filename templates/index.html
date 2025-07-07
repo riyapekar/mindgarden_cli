@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindGarden Journal</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 2rem; }
+    h1 { color: #4caf50; }
+    .entry { background: #fff; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+  </style>
+</head>
+<body>
+  <h1>🌱 MindGarden Journal</h1>
+  <a href="/breathing" style="margin-right:1rem; color:#4caf50; text-decoration:underline;">🧘 Breathing Exercise</a>
+  <a href="/new">+ New Entry</a>
+<br></br>
+  {% for e in entries %}
+    <div class="entry">
+      <strong>{{ e.date }}</strong><br>
+      <em>Mood:</em> {{ e.mood }}<br>
+      <em>Gratitude:</em> {{ e.gratitude }}<br>
+      <em>Reflection:</em> {{ e.reflection }}
+    </div>
+  {% endfor %}
+</body>
+</html>

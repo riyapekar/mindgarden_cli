@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Breathing Exercise</title>
+  <style>
+    html, body, input, textarea, select, button, label, h1 {
+      font-family: 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, sans-serif;
+    }
+    body { background: #f0fff0; padding: 2rem; }
+    .breath-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 400px;
+      margin: 2rem auto;
+      box-shadow: 0 0 8px #ccc;
+      text-align: center;
+    }
+    .phase {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #4caf50;
+    }
+    .timer {
+      font-size: 2.5rem;
+      color: #222;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      padding: 0.5rem 1.5rem;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="breath-box">
+    <div id="round" style="font-size:1.2rem;color:#333;margin-bottom:0.5rem;"></div>
+    <a href="/" style="display:inline-block;margin-bottom:1rem;color:#4caf50;text-decoration:underline;">← Back</a>
+    <h1>🧘 Breathing Exercise</h1>
+    <div class="phase" id="phase">Ready?</div>
+    <div class="timer" id="timer">4</div>
+    <button id="start-btn">Start</button>
+  </div>
+  <script>
+    const phases = ["Inhale", "Hold", "Exhale", "Hold"];
+    let phaseIdx = 0;
+    let count = 4;
+    let interval = null;
+    let roundNum = 1;
+    const totalRounds = 4;
+    const phaseEl = document.getElementById('phase');
+    const timerEl = document.getElementById('timer');
+    const btn = document.getElementById('start-btn');
+    const roundEl = document.getElementById('round');
+
+    function nextPhase() {
+      if (phaseIdx >= phases.length) {
+        phaseIdx = 0;
+        roundNum++;
+        if (roundNum > totalRounds) {
+          phaseEl.textContent = "Done!";
+          timerEl.textContent = "";
+          roundEl.textContent = "";
+          btn.disabled = false;
+          btn.textContent = "Restart";
+          btn.style.display = "inline-block";
+          return;
+        }
+      }
+      roundEl.textContent = `Round ${roundNum} of ${totalRounds}`;
+      phaseEl.textContent = phases[phaseIdx] + "...";
+      count = 4;
+      timerEl.textContent = count;
+      interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          timerEl.textContent = count;
+        } else {
+          clearInterval(interval);
+          phaseIdx++;
+          setTimeout(nextPhase, 500);
+        }
+      }, 1000);
+    }
+
+    btn.onclick = function() {
+      btn.disabled = true;
+      btn.style.display = "none";
+      btn.textContent = "";
+      phaseIdx = 0;
+      roundNum = 1;
+      roundEl.textContent = `Round 1 of ${totalRounds}`;
+      nextPhase();
+    };
+  </script>
+</body>
+</html> 
