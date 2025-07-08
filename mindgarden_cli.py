@@ -13,11 +13,21 @@ from model.mood import MOODS
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-# --- Setup ---
-console = Console()
+# --- Constants ---
 DATA_DIR = os.path.expanduser("~/.mindgarden")
 KEY_FILE = os.path.join(DATA_DIR, "key.key")
 DATA_FILE = os.path.join(DATA_DIR, "journal.json")
+GOOGLE_MODEL_NAME = "models/gemini-1.5-flash-latest"
+AI_PROMPT = (
+    "You are a warm, highly perceptive, and expert psychologist AI trained to detect emotional patterns, cognitive habits, and hidden internal conflicts. "
+    "Given the following journal entries, analyze the user's recurring themes, emotional tone, and behavioral tendencies. "
+    "Offer a summary (4-sentence) that feels deeply personal, insightful, and supportive — almost like a breakthrough moment in therapy. "
+    "Provide practical advice based on what is *not obvious* — find the underlying needs, contradictions, or blind spots. "
+    "Be compassionate and empowering, never judgmental, and impress the user with at least one unexpected observation or reframe they have not considered.\n\n"
+)
+
+# --- Setup ---
+console = Console()
 
 # --- Load .env and Google AI key ---
 load_dotenv()
@@ -80,15 +90,10 @@ def analyze_entries(entries, key):
             continue
     if not texts:
         return "No valid entries to analyze."
-    prompt = (
-        "You are a helpful, positive psychologist AI. "
-        "Given the following journal entries, analyze the user's tendencies and provide a 4-sentence summary of their patterns and how they can improve their life. "
-        "Be gentle, supportive, and actionable. Don't be too generic. Try to impress user wih something unexpected and hidden patterns.\n\n"
-        + "\n---\n".join(texts)
-    )
+    prompt = AI_PROMPT + "\n---\n".join(texts)
     try:
         # Use Gemini 2.5 Flash model explicitly
-        model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
+        model = genai.GenerativeModel(GOOGLE_MODEL_NAME)
         response = model.generate_content(prompt)
         return response.text.strip()
     except Exception as e:
@@ -192,7 +197,7 @@ def index():
     entries = load_entries()
     decrypted = [
         {
-            "date": entry.get("date", ""),
+            "date": (datetime.datetime.fromisoformat(entry["timestamp"]).strftime("%Y-%m-%d %H:%M") if entry.get("timestamp") else entry.get("date", "")),
             "mood": decrypt(entry["mood"], key),
             "gratitude": decrypt(entry["gratitude"], key),
             "reflection": decrypt(entry["reflection"], key)

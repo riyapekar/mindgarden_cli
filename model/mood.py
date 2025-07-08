@@ -1,7 +1,11 @@
-# Plutchik wheel of emotions (primary and secondary)
+# Plutchik wheel of emotions (primary and secondary), sorted from positive to negative
 MOODS = [
-    "Joy", "Trust", "Fear", "Surprise", "Sadness", "Disgust", "Anger", "Anticipation",
-    "Optimism", "Love", "Submission", "Awe", "Disapproval", "Remorse", "Contempt",
-    "Aggressiveness", "Vigilance", "Ecstasy", "Admiration", "Terror", "Amazement",
-    "Grief", "Loathing", "Rage", "Interest"
+    # Most positive
+    "Ecstasy", "Joy", "Admiration", "Trust", "Love", "Optimism", "Vigilance", "Interest", "Anticipation",
+    # Neutral/ambivalent or mixed
+    "Surprise", "Amazement", "Submission", "Awe",
+    # Mildly negative
+    "Disapproval", "Remorse", "Contempt", "Grief", "Sadness",
+    # Strongly negative
+    "Fear", "Terror", "Loathing", "Disgust", "Rage", "Anger", "Aggressiveness"
 ] 
